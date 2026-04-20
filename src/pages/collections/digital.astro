@@ -1,0 +1,40 @@
+---
+export const prerender = false;
+import Base from "../../layouts/Base.astro";
+import { anonClient } from "../../lib/supabase";
+
+const sb = anonClient();
+let products: any[] = [];
+if (sb) {
+  const { data } = await sb.from("products").select("id, slug, name, description, price_pence, image_url, tags").not("published_at", "is", null).contains("tags", ["eBook"]);
+  products = data ?? [];
+}
+if (!products.length) {
+  products = [{ id: 'static-2', slug: 'digital-product-the-history-of-rock-music', name: 'The History of Rock Music', description: 'From roots to revolution — the definitive digital guide to rock music history.', price_pence: 999, image_url: 'https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000' }];
+}
+const collectionSchema = { "@context": "https://schema.org", "@type": "CollectionPage", "name": "Rock Music Digital Downloads", "url": `${Astro.site ?? ""}collections/digital`, "mainEntity": { "@type": "ItemList", "itemListElement": products.map((p, i) => ({ "@type": "ListItem", "position": i + 1, "url": `${Astro.site ?? ""}products/${p.slug}`, "name": p.name })) } };
+---
+<Base title="Rock Music Digital Downloads — eBooks, Audio & Kindle | Harmony Threads" description="Download rock music history. The History of Rock Music available as PDF ($14.99), audiobook ($21.99), or Kindle ($9.99). Instant delivery." structuredData={collectionSchema}>
+  <div class="pt-32 pb-24 max-w-7xl mx-auto px-6">
+    <nav class="mb-10 text-sm flex items-center gap-2" style="color:#5a5a5a;"><a href="/" class="hover:text-[#f0ece3] transition-colors">Home</a><span>/</span><a href="/shop" class="hover:text-[#f0ece3] transition-colors">Shop</a><span>/</span><span style="color:#a09a93;">Digital Downloads</span></nav>
+    <div class="max-w-3xl mb-16">
+      <p class="text-xs font-semibold uppercase tracking-[0.15em] mb-3 accent-dot" style="color:#c0392b;">Collection</p>
+      <h1 class="font-['Fraunces'] font-medium mb-4" style="font-size:clamp(40px,6vw,64px);line-height:1.0;color:#f0ece3;">Digital Downloads</h1>
+      <p class="text-lg leading-relaxed mb-6" style="color:#a09a93;">The stories behind the music, delivered instantly. Our digital catalogue brings rock music history to your screen, your ears, and your Kindle.</p>
+      <p class="leading-relaxed mb-6" style="color:#a09a93;">Our flagship title, <a href="/products/digital-product-the-history-of-rock-music" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">The History of Rock Music</a>, spans six decades of sound, rebellion, and culture. Available in three formats:</p>
+      <ul class="mb-6 flex flex-col gap-3">
+        <li class="flex items-start gap-3 text-sm leading-relaxed" style="color:#a09a93;"><span style="color:#c0392b;font-weight:700;min-width:60px;">Kindle</span>$9.99 — read across any device with bookmarks and highlights.</li>
+        <li class="flex items-start gap-3 text-sm leading-relaxed" style="color:#a09a93;"><span style="color:#c0392b;font-weight:700;min-width:60px;">PDF</span>$14.99 — full typography as designed, ideal for large screens.</li>
+        <li class="flex items-start gap-3 text-sm leading-relaxed" style="color:#a09a93;"><span style="color:#c0392b;font-weight:700;min-width:60px;">Audio</span>$21.99 — professionally narrated high-quality MP3s.</li>
+      </ul>
+      <p class="leading-relaxed" style="color:#a09a93;">All purchases delivered instantly. Pair with our <a href="/collections/apparel" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">apparel collection</a>.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {products.map((p) => {
+        const price = (p.price_pence / 100).toFixed(2);
+        return (<article class="group"><a href={`/products/${p.slug}`} class="block"><div class="relative overflow-hidden mb-4" style="border-radius:4px;aspect-ratio:4/5;background:#171419;"><img src={p.image_url} alt={p.name + ' — digital download'} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /><span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1" style="background:rgba(13,11,15,0.9);color:#c0392b;border:1px solid rgba(192,57,43,0.4);border-radius:3px;">Digital</span></div><h2 class="font-['Fraunces'] font-medium text-xl mb-1 group-hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">{p.name}</h2><p class="text-sm mb-3" style="color:#a09a93;">{p.description?.slice(0, 120)}</p><span class="font-semibold" style="color:#f0ece3;">From ${price}</span></a></article>);
+      })}
+    </div>
+    <div class="mt-16 pt-10 flex gap-4" style="border-top:1px solid rgba(240,236,227,0.08);"><a href="/collections/apparel" class="text-sm font-medium transition-colors hover:text-[#f0ece3]" style="color:#a09a93;">→ Apparel collection</a><a href="/shop" class="text-sm font-medium transition-colors hover:text-[#f0ece3]" style="color:#a09a93;">→ All products</a></div>
+  </div>
+</Base>

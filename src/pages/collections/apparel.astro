@@ -1,0 +1,36 @@
+---
+export const prerender = false;
+import Base from "../../layouts/Base.astro";
+import { anonClient } from "../../lib/supabase";
+
+const sb = anonClient();
+let products: any[] = [];
+if (sb) {
+  const { data } = await sb.from("products").select("id, slug, name, description, price_pence, compare_at_pence, image_url, tags").not("published_at", "is", null).contains("tags", ["Clothing"]);
+  products = data ?? [];
+}
+if (!products.length) {
+  products = [{ id: 'static-1', slug: 'physical-product-the-band-t-shirt', name: '"The Band" Graphic T-Shirt', description: 'Celebrate the timeless legacy of one of rock music\'s most influential groups.', price_pence: 1999, compare_at_pence: 2499, image_url: 'https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000' }];
+}
+const collectionSchema = { "@context": "https://schema.org", "@type": "CollectionPage", "name": "Rock Music Apparel", "url": `${Astro.site ?? ""}collections/apparel`, "mainEntity": { "@type": "ItemList", "itemListElement": products.map((p, i) => ({ "@type": "ListItem", "position": i + 1, "url": `${Astro.site ?? ""}products/${p.slug}`, "name": p.name })) } };
+---
+<Base title="Rock Music Apparel — Graphic Tees & T-Shirts | Harmony Threads" description="Wearable rock music culture. Our graphic t-shirt collection features iconic band designs. Shop The Band collection and more." structuredData={collectionSchema}>
+  <div class="pt-32 pb-24 max-w-7xl mx-auto px-6">
+    <nav class="mb-10 text-sm flex items-center gap-2" style="color:#5a5a5a;"><a href="/" class="hover:text-[#f0ece3] transition-colors">Home</a><span>/</span><a href="/shop" class="hover:text-[#f0ece3] transition-colors">Shop</a><span>/</span><span style="color:#a09a93;">Apparel</span></nav>
+    <div class="max-w-3xl mb-16">
+      <p class="text-xs font-semibold uppercase tracking-[0.15em] mb-3 accent-dot" style="color:#c0392b;">Collection</p>
+      <h1 class="font-['Fraunces'] font-medium mb-4" style="font-size:clamp(40px,6vw,64px);line-height:1.0;color:#f0ece3;">Rock Music Apparel</h1>
+      <p class="text-lg leading-relaxed mb-6" style="color:#a09a93;">Graphic tees that honour the icons. Designed for the music-obsessed, our apparel collection brings rock music culture into everyday wear. Every shirt tells a story — from the smoky clubs of the 1960s to the stadium stages that followed.</p>
+      <p class="leading-relaxed mb-6" style="color:#a09a93;">Our flagship is the <a href="/products/physical-product-the-band-t-shirt" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">"The Band" Graphic T-Shirt</a> — available in green, gray, and red, sizes Small through XL. Free shipping over $75. 30-day returns.</p>
+      <p class="leading-relaxed" style="color:#a09a93;">Browse our <a href="/collections/digital" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">digital downloads</a> to pair the tee with the story.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {products.map((p) => {
+        const price = (p.price_pence / 100).toFixed(2);
+        const compareAt = p.compare_at_pence ? (p.compare_at_pence / 100).toFixed(2) : null;
+        return (<article class="group"><a href={`/products/${p.slug}`} class="block"><div class="relative overflow-hidden mb-4" style="border-radius:4px;aspect-ratio:4/5;background:#171419;"><img src={p.image_url} alt={p.name + ' — rock music graphic t-shirt'} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /><span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1" style="background:#c0392b;color:#fff;border-radius:3px;">Top Seller</span></div><h2 class="font-['Fraunces'] font-medium text-xl mb-1 group-hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">{p.name}</h2><p class="text-sm mb-3 leading-relaxed" style="color:#a09a93;">{p.description?.slice(0, 120)}</p><div class="flex items-center gap-3"><span class="font-semibold" style="color:#f0ece3;">${price}</span>{compareAt && <span class="text-sm line-through" style="color:#5a5a5a;">${compareAt}</span>}</div></a></article>);
+      })}
+    </div>
+    <div class="mt-16 pt-10 flex gap-4" style="border-top:1px solid rgba(240,236,227,0.08);"><a href="/collections/digital" class="text-sm font-medium transition-colors hover:text-[#f0ece3]" style="color:#a09a93;">→ Digital downloads</a><a href="/tags/vintage" class="text-sm font-medium transition-colors hover:text-[#f0ece3]" style="color:#a09a93;">→ Vintage style</a><a href="/shop" class="text-sm font-medium transition-colors hover:text-[#f0ece3]" style="color:#a09a93;">→ All products</a></div>
+  </div>
+</Base>
