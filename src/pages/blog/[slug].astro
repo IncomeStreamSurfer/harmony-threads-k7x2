@@ -1,0 +1,26 @@
+---
+export const prerender = false;
+import Base from "../../layouts/Base.astro";
+import { anonClient } from "../../lib/supabase";
+import { safeHtml } from "../../lib/sanitize";
+const { slug } = Astro.params;
+const sb = anonClient();
+let post: any = null;
+if (sb && slug) { const { data } = await sb.from("content").select("*").eq("slug",slug).not("published_at","is",null).maybeSingle(); post = data; }
+if (!post) return new Response("Not found", { status: 404 });
+const blogSchema = { "@context": "https://schema.org", "@type": "BlogPosting", "headline": post.title, "datePublished": post.published_at, "author": { "@type": "Organization", "name": "Harmony Threads" }, "publisher": { "@type": "Organization", "name": "Harmony Threads" }, "image": post.cover_image_url ?? "" };
+---
+<Base title={post.seo_title || post.title + " | Harmony Threads"} description={post.seo_description || post.excerpt || post.title} ogImage={post.cover_image_url} ogType="article" publishDate={post.published_at} tags={post.tags ?? []} structuredData={blogSchema}>
+  <article class="pt-32 pb-24 max-w-3xl mx-auto px-6">
+    <nav class="mb-10 text-sm flex items-center gap-2" style="color:#5a5a5a;" aria-label="Breadcrumb"><a href="/" class="hover:text-[#f0ece3] transition-colors">Home</a><span>/</span><a href="/blog" class="hover:text-[#f0ece3] transition-colors">Journal</a><span>/</span><span style="color:#a09a93;">{post.title}</span></nav>
+    <header class="mb-12">
+      {post.tags?.length > 0 && <div class="flex flex-wrap gap-2 mb-4">{post.tags.map((tag: string) => <span class="text-[10px] uppercase tracking-widest px-2 py-1 border" style="color:#c0392b;border-color:rgba(192,57,43,0.3);border-radius:3px;">{tag}</span>)}</div>}
+      <h1 class="font-['Fraunces'] font-medium mb-4" style="font-size:clamp(36px,5vw,56px);line-height:1.05;color:#f0ece3;">{post.title}</h1>
+      {post.excerpt && <p class="text-xl leading-relaxed" style="color:#a09a93;">{post.excerpt}</p>}
+      <p class="text-sm mt-4" style="color:#5a5a5a;">{new Date(post.published_at).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</p>
+    </header>
+    {post.cover_image_url && <div class="overflow-hidden mb-12" style="border-radius:4px;aspect-ratio:16/9;background:#171419;"><img src={post.cover_image_url} alt={post.title} class="w-full h-full object-cover" loading="eager" /></div>}
+    <div class="prose-lg" style="color:#c8c2b8;line-height:1.8;" set:html={safeHtml(post.body ?? "")} />
+    <div class="mt-16 pt-8 flex gap-4" style="border-top:1px solid rgba(240,236,227,0.08);"><a href="/blog" class="text-sm hover:text-[#f0ece3] transition-colors" style="color:#a09a93;">← Back to Journal</a><a href="/shop" class="text-sm hover:text-[#f0ece3] transition-colors ml-auto" style="color:#a09a93;">Shop the collection →</a></div>
+  </article>
+</Base>

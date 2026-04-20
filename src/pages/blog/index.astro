@@ -1,0 +1,58 @@
+---
+export const prerender = false;
+import Base from "../../layouts/Base.astro";
+import { anonClient } from "../../lib/supabase";
+const renderedAt = Date.now();
+const sb = anonClient();
+let posts: any[] = [];
+if (sb) { const { data } = await sb.from("content").select("slug,title,excerpt,cover_image_url,published_at,tags").not("published_at","is",null).order("published_at",{ascending:false}); posts = data ?? []; }
+---
+<Base title="Journal — Rock Music Culture | Harmony Threads" description="Deep dives into rock music history, culture, and craft from the Harmony Threads team.">
+  <div class="pt-32 pb-24 max-w-7xl mx-auto px-6">
+    <div class="mb-16">
+      <p class="text-xs font-semibold uppercase tracking-[0.15em] mb-3 accent-dot" style="color:#c0392b;">The journal</p>
+      <h1 class="font-['Fraunces'] font-medium mb-4" style="font-size:clamp(40px,6vw,64px);line-height:1.0;color:#f0ece3;">Rock music, written well</h1>
+      <p class="text-lg max-w-lg leading-relaxed" style="color:#a09a93;">Essays on the music, the people, and the moments that made rock what it is. Browse our <a href="/shop" class="underline hover:text-[#c0392b] transition-colors">shop</a> to bring the stories home.</p>
+    </div>
+    {posts.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {posts.map(p => (
+          <article class="group"><a href={`/blog/${p.slug}`} class="block">
+            {p.cover_image_url && <div class="overflow-hidden mb-4" style="border-radius:4px;aspect-ratio:16/9;background:#171419;"><img src={p.cover_image_url} alt={p.title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /></div>}
+            <div class="mb-2">{p.tags?.slice(0,1).map((t: string) => <span class="text-[10px] uppercase tracking-widest" style="color:#c0392b;">{t}</span>)}</div>
+            <h2 class="font-['Fraunces'] font-medium text-xl mb-2 group-hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">{p.title}</h2>
+            {p.excerpt && <p class="text-sm leading-relaxed" style="color:#a09a93;">{p.excerpt}</p>}
+          </a></article>
+        ))}
+      </div>
+    ) : (
+      <div class="max-w-2xl">
+        <div class="p-12 mb-8" style="background:#171419;border:1px solid rgba(240,236,227,0.08);border-radius:4px;">
+          <p class="font-['Fraunces'] font-medium text-2xl mb-3" style="color:#f0ece3;">Fresh articles soon</p>
+          <p class="leading-relaxed mb-6" style="color:#a09a93;">We write slowly and deliberately. Sign up to hear first when something new drops.</p>
+          <form id="blog-nl-form" class="flex gap-3">
+            <input type="hidden" name="renderedAt" value={renderedAt} />
+            <input type="text" name="website" aria-hidden="true" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;" />
+            <input type="email" name="email" placeholder="your@email.com" required class="flex-1 px-4 py-3 text-sm focus:outline-none" style="background:#0d0b0f;border:1px solid rgba(240,236,227,0.15);border-radius:4px;color:#f0ece3;" />
+            <button type="submit" class="px-5 py-3 text-sm font-semibold" style="background:#c0392b;color:#fff;border-radius:4px;">Join the list</button>
+          </form>
+          <div id="blog-nl-msg" class="hidden text-sm mt-3" style="color:#c0392b;"></div>
+        </div>
+        <p class="text-sm" style="color:#5a5a5a;">In the meantime, <a href="/shop" class="underline hover:text-[#a09a93] transition-colors">browse the store</a>.</p>
+      </div>
+    )}
+  </div>
+</Base>
+<script>
+  const nlEl = document.querySelector('[name="renderedAt"]');
+  if (nlEl) (nlEl as HTMLInputElement).value = String(Date.now());
+  document.getElementById('blog-nl-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement;
+    const body = Object.fromEntries(new FormData(form).entries());
+    const msg = document.getElementById('blog-nl-msg');
+    const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const json = await res.json();
+    if (msg) { msg.classList.remove('hidden'); msg.textContent = json.ok ? "You're on the list." : (json.error ?? 'Error'); }
+  });
+</script>

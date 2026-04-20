@@ -1,0 +1,14 @@
+---
+export const prerender = false;
+import Base from "../../layouts/Base.astro";
+---
+<Base title="Checkout Cancelled | Harmony Threads" description="Your checkout was cancelled. Your cart is still saved." noindex={true}>
+  <div class="pt-32 pb-24 max-w-2xl mx-auto px-6 text-center">
+    <h1 class="font-['Fraunces'] font-medium text-4xl mb-4" style="color:#f0ece3;">Checkout cancelled</h1>
+    <p class="text-lg mb-10" style="color:#a09a93;">No worries — your cart is still saved.</p>
+    <div class="flex justify-center gap-4">
+      <a href="/shop" class="inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm hover:-translate-y-0.5 transition-all" style="background:#c0392b;color:#fff;border-radius:6px;">Back to shop</a>
+      <a href="/" class="inline-flex items-center px-6 py-3 font-semibold text-sm" style="color:#a09a93;border:1px solid rgba(240,236,227,0.15);border-radius:6px;">Home</a>
+    </div>
+  </div>
+</Base>

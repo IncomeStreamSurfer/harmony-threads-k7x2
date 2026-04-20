@@ -1,0 +1,13 @@
+---
+export const prerender = false;
+import Base from "../../layouts/Base.astro";
+const products = [{ slug: 'physical-product-the-band-t-shirt', name: '"The Band" Graphic T-Shirt', price: '19.99', image: 'https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000' },{ slug: 'digital-product-the-history-of-rock-music', name: 'The History of Rock Music', price: '9.99', image: 'https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000' }];
+---
+<Base title="Rock Music Products — Apparel & Books | Harmony Threads" description="Everything rock music at Harmony Threads. Graphic tees, history books, and accessories for the music-obsessed.">
+  <div class="pt-32 pb-24 max-w-7xl mx-auto px-6">
+    <div class="max-w-3xl mb-16"><p class="text-xs font-semibold uppercase tracking-[0.15em] mb-3 accent-dot" style="color:#c0392b;">Tag</p><h1 class="font-['Fraunces'] font-medium mb-4" style="font-size:clamp(40px,6vw,64px);line-height:1.0;color:#f0ece3;">Rock Music</h1><p class="text-lg leading-relaxed" style="color:#a09a93;">From the shirts you wear to the stories you read — everything in this collection is rooted in rock music culture. Explore our <a href="/collections/apparel" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">apparel</a> and <a href="/collections/digital" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">digital downloads</a>.</p></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {products.map(p => (<article class="group"><a href={`/products/${p.slug}`} class="block"><div class="overflow-hidden mb-4" style="border-radius:4px;aspect-ratio:4/5;background:#171419;"><img src={p.image} alt={p.name} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /></div><h2 class="font-['Fraunces'] font-medium text-xl mb-2 group-hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">{p.name}</h2><span class="font-semibold" style="color:#f0ece3;">${p.price}</span></a></article>))}
+    </div>
+  </div>
+</Base>

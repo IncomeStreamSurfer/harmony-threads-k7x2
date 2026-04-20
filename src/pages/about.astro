@@ -1,0 +1,35 @@
+---
+export const prerender = false;
+import Base from "../layouts/Base.astro";
+const aboutSchema = { "@context": "https://schema.org", "@type": "AboutPage", "name": "About Harmony Threads", "url": `${Astro.site ?? ""}about` };
+---
+<Base title="Our Story — Harmony Threads | Rock Music Culture Store" description="Harmony Threads was started in 2026 by people who grew up going to shows. We make graphic tees and digital books that honour the legacy of rock music." structuredData={aboutSchema}>
+  <article class="pt-32 pb-24 max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.15em] mb-4 accent-dot" style="color:#c0392b;">Our story</p>
+        <h1 class="font-['Fraunces'] font-medium mb-8" style="font-size:clamp(40px,6vw,64px);line-height:1.0;color:#f0ece3;">Why we started this</h1>
+        <div class="space-y-6">
+          <p class="leading-relaxed" style="color:#a09a93;">Harmony Threads started with a simple frustration: the band merchandise at every show was forgettable. Thin cotton, bad printing, designs that looked like a five-minute Photoshop job. We knew the music deserved better.</p>
+          <p class="leading-relaxed" style="color:#a09a93;">So in 2026, we started making it ourselves. We sourced premium blanks, found printers who understood what "register" meant, and worked with designers who had actually been to the shows. The first run of <a href="/products/physical-product-the-band-t-shirt" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">"The Band" t-shirt</a> sold out in two weeks.</p>
+          <p class="leading-relaxed" style="color:#a09a93;">The digital side came next. We had been writing about rock music for years. So we turned it into something people could buy and keep. <a href="/collections/digital" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">The History of Rock Music</a> is that project made real — PDF, audiobook, or Kindle.</p>
+          <p class="leading-relaxed" style="color:#a09a93;">We're a small operation. Every piece is chosen deliberately. If you have a question or just want to talk about music — <a href="/contact" class="underline hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">reach out</a>.</p>
+        </div>
+        <div class="mt-12 flex gap-4">
+          <a href="/shop" class="inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-all hover:-translate-y-0.5" style="background:#c0392b;color:#fff;border-radius:6px;">Shop the collection</a>
+          <a href="/contact" class="inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-colors hover:text-[#f0ece3]" style="color:#a09a93;border:1px solid rgba(240,236,227,0.15);border-radius:6px;">Get in touch</a>
+        </div>
+      </div>
+      <div class="space-y-6">
+        <div class="overflow-hidden" style="border-radius:4px;aspect-ratio:4/5;background:#171419;">
+          <img src="https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000" alt="Rock music apparel craft" class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="p-4 text-center" style="background:#171419;border-radius:4px;border:1px solid rgba(240,236,227,0.08);"><p class="font-['Fraunces'] font-medium text-2xl" style="color:#c0392b;">2026</p><p class="text-xs uppercase tracking-wider mt-1" style="color:#5a5a5a;">Founded</p></div>
+          <div class="p-4 text-center" style="background:#171419;border-radius:4px;border:1px solid rgba(240,236,227,0.08);"><p class="font-['Fraunces'] font-medium text-2xl" style="color:#c0392b;">3</p><p class="text-xs uppercase tracking-wider mt-1" style="color:#5a5a5a;">Products</p></div>
+          <div class="p-4 text-center" style="background:#171419;border-radius:4px;border:1px solid rgba(240,236,227,0.08);"><p class="font-['Fraunces'] font-medium text-2xl" style="color:#c0392b;">∞</p><p class="text-xs uppercase tracking-wider mt-1" style="color:#5a5a5a;">Riffs</p></div>
+        </div>
+      </div>
+    </div>
+  </article>
+</Base>
