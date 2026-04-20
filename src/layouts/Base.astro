@@ -1,0 +1,37 @@
+---
+import SEOHead from "../components/SEOHead.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogType?: string;
+  canonicalUrl?: string;
+  structuredData?: object | object[];
+  noindex?: boolean;
+  tags?: string[];
+  noFooter?: boolean;
+}
+
+const { noFooter = false, ...seoProps } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <SEOHead {...seoProps} />
+  </head>
+  <body style="background:#0d0b0f;color:#f0ece3;">
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    {!noFooter && <Footer />}
+
+    <!-- Cart Drawer slot (injected globally) -->
+    <div id="cart-drawer-root"></div>
+  </body>
+</html>
