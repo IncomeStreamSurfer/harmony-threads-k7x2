@@ -1,0 +1,84 @@
+---
+export const prerender = false;
+import Base from "../../layouts/Base.astro";
+import { anonClient } from "../../lib/supabase";
+import { safeHtml } from "../../lib/sanitize";
+
+const { slug } = Astro.params;
+const sb = anonClient();
+let product: any = null;
+
+if (sb && slug) {
+  const { data } = await sb.from("products").select("*").eq("slug", slug).not("published_at", "is", null).maybeSingle();
+  product = data;
+}
+
+const STATIC: Record<string, any> = {
+  'physical-product-the-band-t-shirt': { id: 'static-1', slug: 'physical-product-the-band-t-shirt', name: '"The Band" Graphic T-Shirt', description: "Celebrate the timeless legacy of one of rock music's most influential groups with our exclusive The Band Graphic T-Shirt. Perfect for music lovers and vintage style enthusiasts, this t-shirt features a striking graphic of The Band, capturing the essence of their iconic sound and enduring spirit.", price_pence: 1999, compare_at_pence: 2499, currency: 'usd', image_url: 'https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000', tags: ['Unisex','Clothing','Men','Women','Casual','Vintage'], meta_title: 'Vintage The Band Graphic T-Shirt: Iconic Rock Music Tribute Tee', meta_description: 'Celebrate the legacy of rock icons with our exclusive The Band Graphic T-Shirt.', variants_json: { option1: { name: 'Size', values: ['Small','Medium','Large','XL'] }, option2: { name: 'Color', values: ['Green','Gray','Red'] } } },
+  'digital-product-the-history-of-rock-music': { id: 'static-2', slug: 'digital-product-the-history-of-rock-music', name: 'The History of Rock Music', description: 'From roots to revolution — the definitive digital guide to rock music history. Spanning six decades of sound, rebellion, and culture.', price_pence: 999, compare_at_pence: null, currency: 'usd', image_url: 'https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000', tags: ['Rock Music','Music History','eBook','Music Culture','Rock Bands'], meta_title: 'The History of Rock Music eBook – From Roots to Revolution', meta_description: 'A comprehensive digital guide to rock music history. PDF ($14.99), Audio ($21.99), Kindle ($9.99).', variants_json: { option1: { name: 'Format', values: ['Kindle ($9.99)','PDF ($14.99)','Audio ($21.99)'] } } },
+  'example-perfume': { id: 'static-3', slug: 'example-perfume', name: 'Example Perfume', description: 'A premium fragrance for the discerning music lover. Inspired by the intensity of a live performance — smoky, warm, and unforgettable.', price_pence: 7499, compare_at_pence: 8000, currency: 'usd', image_url: 'https://burst.shopifycdn.com/photos/black-glass-perfume-bottle-and-spritzer.jpg?width=500', tags: ['mens perfume','fragrance','luxury'], meta_title: 'Example Perfume | Premium Fragrance — Harmony Threads', meta_description: 'A premium fragrance for the discerning music lover.', variants_json: { option1: { name: 'Size', values: ['Premium (50ml)'] } } },
+};
+
+if (!product && slug && STATIC[slug]) product = STATIC[slug];
+if (!product) return new Response('Not found', { status: 404 });
+
+const price = (product.price_pence / 100).toFixed(2);
+const compareAt = product.compare_at_pence ? (product.compare_at_pence / 100).toFixed(2) : null;
+const variants = product.variants_json as any;
+
+const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": product.name, "description": product.description, "image": product.image_url, "offers": { "@type": "Offer", "price": price, "priceCurrency": (product.currency ?? 'USD').toUpperCase(), "availability": "https://schema.org/InStock" } };
+const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": Astro.site?.toString() ?? "/" }, { "@type": "ListItem", "position": 2, "name": "Shop", "item": `${Astro.site ?? ""}shop` }, { "@type": "ListItem", "position": 3, "name": product.name, "item": `${Astro.site ?? ""}products/${product.slug}` }] };
+---
+
+<Base title={product.meta_title || product.name + " | Harmony Threads"} description={product.meta_description || product.description?.slice(0,160)} ogImage={product.image_url} ogType="product" structuredData={[productSchema, breadcrumbSchema]} tags={Array.isArray(product.tags) ? product.tags : []}>
+  <div class="pt-32 pb-24 max-w-7xl mx-auto px-6">
+    <nav class="mb-10 text-sm" aria-label="Breadcrumb"><ol class="flex items-center gap-2" style="color:#5a5a5a;"><li><a href="/" class="hover:text-[#f0ece3] transition-colors">Home</a></li><li>/</li><li><a href="/shop" class="hover:text-[#f0ece3] transition-colors">Shop</a></li><li>/</li><li style="color:#a09a93;">{product.name}</li></ol></nav>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+      <div><div class="overflow-hidden" style="border-radius:4px;aspect-ratio:4/5;background:#171419;"><img src={product.image_url || `https://picsum.photos/seed/${product.slug}/800/1000`} alt={product.name} class="w-full h-full object-cover" loading="eager" /></div></div>
+      <div class="lg:sticky lg:top-32">
+        {Array.isArray(product.tags) && product.tags.length > 0 && <div class="flex flex-wrap gap-2 mb-4">{product.tags.slice(0,3).map((tag: string) => <span class="text-[10px] uppercase tracking-widest px-2 py-1 border" style="color:#5a5a5a;border-color:rgba(240,236,227,0.12);border-radius:3px;">{tag}</span>)}</div>}
+        <h1 class="font-['Fraunces'] font-medium mb-4" style="font-size:clamp(32px,4vw,48px);line-height:1.05;color:#f0ece3;">{product.name}</h1>
+        <div class="flex items-center gap-4 mb-6">
+          <span class="font-['Fraunces'] font-medium text-3xl" style="color:#f0ece3;">${price}</span>
+          {compareAt && <><span class="text-lg line-through" style="color:#5a5a5a;">${compareAt}</span><span class="text-xs font-bold uppercase tracking-wider px-2 py-1" style="background:rgba(192,57,43,0.15);color:#c0392b;border-radius:3px;">Save ${(parseFloat(compareAt) - parseFloat(price)).toFixed(2)}</span></>}
+        </div>
+        <p class="leading-relaxed mb-8" style="color:#a09a93;">{product.description}</p>
+        {variants?.option1 && <div class="mb-6"><p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#5a5a5a;">{variants.option1.name}</p><div class="flex flex-wrap gap-2">{variants.option1.values.map((v: string, i: number) => <button data-opt="opt1" data-val={v} class="opt-btn px-4 py-2 text-sm font-medium border transition-all duration-150" style={`border-radius:4px;border-color:${i===0?'#c0392b':'rgba(240,236,227,0.15)'};color:${i===0?'#f0ece3':'#a09a93'};background:${i===0?'rgba(192,57,43,0.1)':'transparent'};`}>{v}</button>)}</div></div>}
+        {variants?.option2 && <div class="mb-8"><p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#5a5a5a;">{variants.option2.name}</p><div class="flex flex-wrap gap-2">{variants.option2.values.map((v: string, i: number) => <button data-opt="opt2" data-val={v} class="opt-btn px-4 py-2 text-sm font-medium border transition-all duration-150" style={`border-radius:4px;border-color:${i===0?'#c0392b':'rgba(240,236,227,0.15)'};color:${i===0?'#f0ece3':'#a09a93'};background:${i===0?'rgba(192,57,43,0.1)':'transparent'};`}>{v}</button>)}</div></div>}
+        <button id="add-to-cart" data-product-id={product.id} data-product-name={product.name} data-product-price={product.price_pence} data-product-image={product.image_url || ''} class="w-full py-4 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 mb-4" style="background:#c0392b;color:#fff;border-radius:6px;">Add to cart — ${price}</button>
+        <a href="/shop" class="block text-center py-3 text-sm font-medium transition-colors hover:text-[#f0ece3]" style="color:#a09a93;border:1px solid rgba(240,236,227,0.12);border-radius:6px;">Continue shopping</a>
+        <div class="mt-8 pt-8" style="border-top:1px solid rgba(240,236,227,0.08);"><ul class="flex flex-col gap-3"><li class="flex items-center gap-3 text-sm" style="color:#a09a93;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>Free shipping over $75</li><li class="flex items-center gap-3 text-sm" style="color:#a09a93;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>Digital downloads delivered instantly</li><li class="flex items-center gap-3 text-sm" style="color:#a09a93;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>30-day returns on physical products</li></ul></div>
+      </div>
+    </div>
+    <div class="mt-24 pt-12" style="border-top:1px solid rgba(240,236,227,0.08);"><div class="flex items-center justify-between mb-8"><h2 class="font-['Fraunces'] font-medium text-2xl" style="color:#f0ece3;">Continue exploring</h2><a href="/shop" class="text-sm hover:text-[#f0ece3] transition-colors" style="color:#a09a93;">View all →</a></div><div class="grid grid-cols-2 md:grid-cols-3 gap-6">{Object.values(STATIC).filter((p: any) => p.slug !== slug).map((p: any) => <a href={`/products/${p.slug}`} class="group block"><div class="overflow-hidden mb-3" style="border-radius:4px;aspect-ratio:1/1;background:#171419;"><img src={p.image_url} alt={p.name} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /></div><p class="font-['Fraunces'] font-medium text-base group-hover:text-[#c0392b] transition-colors" style="color:#f0ece3;">{p.name}</p><p class="text-sm mt-1" style="color:#a09a93;">${(p.price_pence/100).toFixed(2)}</p></a>)}</div></div>
+  </div>
+</Base>
+
+<script>
+  document.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const opt = (btn as HTMLElement).dataset.opt;
+      document.querySelectorAll(`[data-opt="${opt}"]`).forEach(b => { (b as HTMLElement).style.borderColor='rgba(240,236,227,0.15)'; (b as HTMLElement).style.color='#a09a93'; (b as HTMLElement).style.background='transparent'; });
+      (btn as HTMLElement).style.borderColor='#c0392b'; (btn as HTMLElement).style.color='#f0ece3'; (btn as HTMLElement).style.background='rgba(192,57,43,0.1)';
+    });
+  });
+  document.getElementById('add-to-cart')?.addEventListener('click', () => {
+    const btn = document.getElementById('add-to-cart') as HTMLElement;
+    const productId = btn.dataset.productId!;
+    const name = btn.dataset.productName!;
+    const price = parseInt(btn.dataset.productPrice!);
+    const image = btn.dataset.productImage!;
+    const opt1Active = document.querySelector('[data-opt="opt1"]') as HTMLElement;
+    const opt2Active = document.querySelector('[data-opt="opt2"]') as HTMLElement;
+    const variantLabel = [opt1Active?.dataset.val, opt2Active?.dataset.val].filter(Boolean).join(' / ');
+    try {
+      const cart = JSON.parse(localStorage.getItem('ht_cart') || '[]');
+      const existing = cart.find((i: any) => i.product_id === productId && i.variant_label === variantLabel);
+      if (existing) { existing.qty++; } else { cart.push({ product_id: productId, qty: 1, variant_label: variantLabel || undefined, name, price_pence: price, image_url: image }); }
+      localStorage.setItem('ht_cart', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cart-updated'));
+      btn.textContent = '✓ Added to cart'; (btn as HTMLElement).style.background='#1a4a2a';
+      setTimeout(() => { btn.textContent=`Add to cart — $${(price/100).toFixed(2)}`; (btn as HTMLElement).style.background='#c0392b'; }, 2000);
+    } catch(e) { console.error(e); }
+  });
+</script>

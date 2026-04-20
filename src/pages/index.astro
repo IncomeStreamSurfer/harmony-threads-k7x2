@@ -1,0 +1,138 @@
+---
+export const prerender = false;
+import Base from "../layouts/Base.astro";
+import { anonClient } from "../lib/supabase";
+
+const sb = anonClient();
+let products: any[] = [];
+if (sb) {
+  const { data } = await sb.from("products").select("id, slug, name, description, price_pence, compare_at_pence, currency, image_url, tags").not("published_at", "is", null).limit(3);
+  products = data ?? [];
+}
+
+const websiteSchema = { "@context": "https://schema.org", "@type": "WebSite", "name": "Harmony Threads", "url": Astro.site?.toString() ?? "", "description": "Rock music culture, worn and read." };
+const orgSchema = { "@context": "https://schema.org", "@type": "Organization", "name": "Harmony Threads", "url": Astro.site?.toString() ?? "", "logo": `${Astro.site ?? ""}favicon.svg`, "sameAs": [] };
+---
+
+<Base title="Harmony Threads | Rock Music Apparel & Digital Media" description="Graphic tees and digital books for rock music lovers. Shop The Band T-Shirt collection, rock history eBooks, and more. Wear the music. Own the history." structuredData={[websiteSchema, orgSchema]}>
+  <!-- HERO -->
+  <section class="relative min-h-screen flex items-end pb-24 pt-32 overflow-hidden">
+    <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse 80% 60% at 70% 50%, rgba(192,57,43,0.12) 0%, transparent 70%), #0d0b0f;"></div>
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none select-none z-0 font-['Fraunces'] font-medium" style="font-size:clamp(120px,20vw,280px);color:rgba(240,236,227,0.03);line-height:1;">ROCK</div>
+    <div class="relative z-10 max-w-7xl mx-auto px-6 w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-end">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] mb-6 accent-dot" style="color:#c0392b;">Est. 2026 · Rock Music Culture</p>
+          <h1 class="font-['Fraunces'] font-medium mb-6" style="font-size:clamp(52px,7vw,96px);line-height:0.97;letter-spacing:-0.03em;color:#f0ece3;">Wear the<br /><em style="color:#c0392b;font-style:italic;">music.</em><br />Own the history.</h1>
+          <p class="text-lg mb-10 max-w-md leading-relaxed" style="color:#a09a93;">Graphic tees that honour the icons. Digital books that tell their stories. For everyone who grew up on the riff.</p>
+          <div class="flex flex-wrap gap-4">
+            <a href="/shop" class="inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="background:#c0392b;color:#f0ece3;border-radius:6px;">Shop the collection <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="/about" class="inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-sm transition-all duration-200 hover:text-[#f0ece3]" style="color:#a09a93;border:1px solid rgba(240,236,227,0.15);border-radius:6px;">Our story</a>
+          </div>
+          <div class="flex gap-10 mt-16">
+            <div><p class="font-['Fraunces'] font-medium text-3xl" style="color:#f0ece3;">3</p><p class="text-xs uppercase tracking-wider mt-1" style="color:#5a5a5a;">Products</p></div>
+            <div style="border-left:1px solid rgba(240,236,227,0.1);" class="pl-10"><p class="font-['Fraunces'] font-medium text-3xl" style="color:#f0ece3;">$9.99</p><p class="text-xs uppercase tracking-wider mt-1" style="color:#5a5a5a;">Starting from</p></div>
+            <div style="border-left:1px solid rgba(240,236,227,0.1);" class="pl-10"><p class="font-['Fraunces'] font-medium text-3xl" style="color:#f0ece3;">Free</p><p class="text-xs uppercase tracking-wider mt-1" style="color:#5a5a5a;">Digital delivery</p></div>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="relative overflow-hidden" style="border-radius:4px;aspect-ratio:3/4;max-height:600px;">
+            <img src="https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000" alt="The Band graphic t-shirt — rock music apparel by Harmony Threads" class="w-full h-full object-cover" loading="eager" />
+            <div class="absolute inset-0" style="background:linear-gradient(to top, rgba(13,11,15,0.6) 0%, transparent 50%);"></div>
+            <div class="absolute bottom-6 left-6 right-6 p-4" style="background:rgba(13,11,15,0.85);backdrop-filter:blur(12px);border-radius:4px;border:1px solid rgba(240,236,227,0.1);">
+              <p class="text-xs uppercase tracking-widest mb-1" style="color:#c0392b;">New release</p>
+              <p class="font-['Fraunces'] font-medium text-lg" style="color:#f0ece3;">"The Band" Graphic Tee</p>
+              <p class="text-sm mt-1" style="color:#a09a93;">$19.99 · Green · Gray · Red</p>
+            </div>
+          </div>
+          <div class="absolute -top-4 -right-4 w-20 h-20 rounded-full flex flex-col items-center justify-center" style="background:#c0392b;transform:rotate(12deg);"><p class="font-['Fraunces'] font-medium text-lg leading-none" style="color:#f0ece3;">$19</p><p class="text-[10px] uppercase tracking-wider" style="color:rgba(240,236,227,0.8);">.99</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="py-4 overflow-hidden" style="border-top:1px solid rgba(240,236,227,0.08);border-bottom:1px solid rgba(240,236,227,0.08);background:#171419;">
+    <div class="flex gap-12 whitespace-nowrap" style="animation:marquee 30s linear infinite;">
+      {['Rock Music Apparel','Digital Downloads','Vintage Style','Music History','Graphic Tees','The Band Collection','eBooks & Audio','Rock Culture','Harmony Threads'].map(t => (<span class="text-xs font-semibold uppercase tracking-[0.15em] shrink-0" style="color:#5a5a5a;">{t} <span style="color:#c0392b;">·</span></span>))}
+      {['Rock Music Apparel','Digital Downloads','Vintage Style','Music History','Graphic Tees','The Band Collection','eBooks & Audio','Rock Culture','Harmony Threads'].map(t => (<span class="text-xs font-semibold uppercase tracking-[0.15em] shrink-0" style="color:#5a5a5a;" aria-hidden="true">{t} <span style="color:#c0392b;">·</span></span>))}
+    </div>
+  </div>
+
+  <!-- Featured Products -->
+  <section class="py-24 max-w-7xl mx-auto px-6">
+    <div class="flex items-end justify-between mb-12">
+      <div><p class="text-xs font-semibold uppercase tracking-[0.15em] mb-3 accent-dot" style="color:#c0392b;">The catalogue</p><h2 class="font-['Fraunces'] font-medium" style="font-size:clamp(36px,5vw,56px);line-height:1.0;color:#f0ece3;">Everything we make</h2></div>
+      <a href="/shop" class="hidden md:inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-[#f0ece3]" style="color:#a09a93;">View all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    {products.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {products.map((p) => {
+          const price = (p.price_pence / 100).toFixed(2);
+          const compareAt = p.compare_at_pence ? (p.compare_at_pence / 100).toFixed(2) : null;
+          return (<article class="group"><a href={`/products/${p.slug}`} class="block"><div class="overflow-hidden mb-4" style="border-radius:4px;aspect-ratio:4/5;background:#171419;"><img src={p.image_url || 'https://picsum.photos/seed/' + p.slug + '/800/1000'} alt={p.name} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /></div><h3 class="font-['Fraunces'] font-medium text-xl mb-1 transition-colors group-hover:text-[#c0392b]" style="color:#f0ece3;">{p.name}</h3><p class="text-sm mb-3" style="color:#a09a93;">{p.description?.slice(0,100)}…</p><div class="flex items-center gap-3"><span class="font-semibold" style="color:#f0ece3;">${price}</span>{compareAt && <span class="text-sm line-through" style="color:#5a5a5a;">${compareAt}</span>}</div></a></article>);
+        })}
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <article class="group"><a href="/products/physical-product-the-band-t-shirt" class="block"><div class="relative overflow-hidden mb-4" style="border-radius:4px;aspect-ratio:4/5;background:#171419;"><img src="https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000" alt="The Band Graphic T-Shirt" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /><span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1" style="background:#c0392b;color:#fff;border-radius:3px;">Top Seller</span></div><h3 class="font-['Fraunces'] font-medium text-xl mb-1 transition-colors group-hover:text-[#c0392b]" style="color:#f0ece3;">&quot;The Band&quot; Graphic T-Shirt</h3><p class="text-sm mb-3 leading-relaxed" style="color:#a09a93;">Celebrate the timeless legacy of one of rock music's most influential groups.</p><div class="flex items-center gap-3"><span class="font-semibold" style="color:#f0ece3;">$19.99</span><span class="text-sm line-through" style="color:#5a5a5a;">$24.99</span></div></a></article>
+        <article class="group"><a href="/products/digital-product-the-history-of-rock-music" class="block"><div class="relative overflow-hidden mb-4" style="border-radius:4px;aspect-ratio:4/5;background:#171419;"><img src="https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=1000" alt="The History of Rock Music digital book" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /><span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1" style="background:rgba(13,11,15,0.9);color:#c0392b;border:1px solid rgba(192,57,43,0.4);border-radius:3px;">Digital</span></div><h3 class="font-['Fraunces'] font-medium text-xl mb-1 transition-colors group-hover:text-[#c0392b]" style="color:#f0ece3;">The History of Rock Music</h3><p class="text-sm mb-3" style="color:#a09a93;">From roots to revolution — the definitive digital guide to rock music history.</p><span class="font-semibold" style="color:#f0ece3;">From $9.99</span></a></article>
+        <article class="group"><a href="/products/example-perfume" class="block"><div class="relative overflow-hidden mb-4" style="border-radius:4px;aspect-ratio:4/5;background:#171419;"><img src="https://burst.shopifycdn.com/photos/black-glass-perfume-bottle-and-spritzer.jpg?width=500" alt="Example Perfume premium fragrance" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /><span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1" style="background:#c0392b;color:#fff;border-radius:3px;">Premium</span></div><h3 class="font-['Fraunces'] font-medium text-xl mb-1 transition-colors group-hover:text-[#c0392b]" style="color:#f0ece3;">Example Perfume</h3><p class="text-sm mb-3" style="color:#a09a93;">Premium fragrance for the discerning music lover.</p><span class="font-semibold" style="color:#f0ece3;">$74.99</span></a></article>
+      </div>
+    )}
+  </section>
+
+  <!-- Collections -->
+  <section class="py-16 max-w-7xl mx-auto px-6">
+    <p class="text-xs font-semibold uppercase tracking-[0.15em] mb-8 accent-dot" style="color:#c0392b;">Browse by collection</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="/collections/apparel" class="group relative overflow-hidden p-8 transition-all duration-300 hover:border-[#c0392b]" style="background:#171419;border:1px solid rgba(240,236,227,0.08);border-radius:4px;min-height:180px;display:flex;flex-direction:column;justify-content:flex-end;"><div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background:linear-gradient(135deg, rgba(192,57,43,0.08), transparent);"></div><p class="text-xs uppercase tracking-widest mb-2" style="color:#5a5a5a;">Category</p><h3 class="font-['Fraunces'] font-medium text-2xl mb-1" style="color:#f0ece3;">Apparel</h3><p class="text-sm" style="color:#a09a93;">Graphic tees & wearable music</p></a>
+      <a href="/collections/digital" class="group relative overflow-hidden p-8 transition-all duration-300 hover:border-[#c0392b]" style="background:#171419;border:1px solid rgba(240,236,227,0.08);border-radius:4px;min-height:180px;display:flex;flex-direction:column;justify-content:flex-end;"><div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background:linear-gradient(135deg, rgba(192,57,43,0.08), transparent);"></div><p class="text-xs uppercase tracking-widest mb-2" style="color:#5a5a5a;">Category</p><h3 class="font-['Fraunces'] font-medium text-2xl mb-1" style="color:#f0ece3;">Digital Downloads</h3><p class="text-sm" style="color:#a09a93;">eBooks, audio, and Kindle editions</p></a>
+      <a href="/tags/vintage" class="group relative overflow-hidden p-8 transition-all duration-300 hover:border-[#c0392b]" style="background:#171419;border:1px solid rgba(240,236,227,0.08);border-radius:4px;min-height:180px;display:flex;flex-direction:column;justify-content:flex-end;"><div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background:linear-gradient(135deg, rgba(192,57,43,0.08), transparent);"></div><p class="text-xs uppercase tracking-widest mb-2" style="color:#5a5a5a;">Tag</p><h3 class="font-['Fraunces'] font-medium text-2xl mb-1" style="color:#f0ece3;">Vintage Style</h3><p class="text-sm" style="color:#a09a93;">Timeless cuts, classic graphics</p></a>
+    </div>
+  </section>
+
+  <!-- Manifesto -->
+  <section class="py-24" style="border-top:1px solid rgba(240,236,227,0.08);">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <p class="font-['Fraunces'] font-medium italic leading-tight mb-6" style="font-size:clamp(32px,5vw,56px);color:#f0ece3;">&ldquo;Rock and roll is not just music. It&rsquo;s a way of life.&rdquo;</p>
+      <p class="text-sm uppercase tracking-widest" style="color:#5a5a5a;">The ethos behind everything we make</p>
+      <div class="mt-10 flex justify-center"><a href="/shop" class="inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5" style="background:#c0392b;color:#f0ece3;border-radius:6px;">Shop now <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="py-20 max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center p-10 md:p-16" style="background:#171419;border:1px solid rgba(240,236,227,0.08);border-radius:4px;">
+      <div><p class="text-xs font-semibold uppercase tracking-[0.15em] mb-3 accent-dot" style="color:#c0392b;">Stay in the loop</p><h2 class="font-['Fraunces'] font-medium text-3xl mb-3" style="color:#f0ece3;">New drops, straight to your inbox</h2><p class="text-sm leading-relaxed" style="color:#a09a93;">New releases, limited tees, and rock history dispatches. No noise, just signal.</p></div>
+      <form id="newsletter-form" class="flex gap-3">
+        <input type="hidden" id="nl-rendered-at" name="renderedAt" />
+        <input type="text" name="website" aria-hidden="true" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;" />
+        <input type="email" name="email" placeholder="your@email.com" required class="flex-1 px-4 py-3 text-sm focus:outline-none" style="background:#0d0b0f;border:1px solid rgba(240,236,227,0.15);border-radius:4px;color:#f0ece3;" />
+        <button type="submit" class="px-5 py-3 text-sm font-semibold whitespace-nowrap transition-all hover:-translate-y-0.5" style="background:#c0392b;color:#fff;border-radius:4px;">Subscribe</button>
+      </form>
+      <div id="nl-msg" class="hidden md:col-span-2 text-sm" style="color:#c0392b;"></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+</style>
+
+<script>
+  const nlEl = document.getElementById('nl-rendered-at');
+  if (nlEl) (nlEl as HTMLInputElement).value = String(Date.now());
+  document.getElementById('newsletter-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement;
+    const body = Object.fromEntries(new FormData(form).entries());
+    const msg = document.getElementById('nl-msg');
+    try {
+      const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const json = await res.json();
+      if (msg) { msg.classList.remove('hidden'); msg.textContent = json.ok ? "You're in. Watch your inbox." : (json.error || 'Something went wrong.'); msg.style.color = json.ok ? '#c0392b' : '#a09a93'; }
+      if (json.ok) (form as HTMLFormElement).reset();
+    } catch { if (msg) { msg.classList.remove('hidden'); msg.textContent = 'Network error.'; } }
+  });
+</script>
